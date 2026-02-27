@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StaffCo — Pricing</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B0E11;
+    --surface: #13171C;
+    --surface-hover: #1A1F26;
+    --border: #1E2530;
+    --border-accent: #2A3340;
+    --text: #E8ECF1;
+    --text-dim: #8793A6;
+    --text-muted: #4E5A6B;
+    --accent: #3B82F6;
+    --accent-glow: rgba(59, 130, 246, 0.15);
+    --accent-hover: #5B9BFF;
+    --green: #34D399;
+    --green-glow: rgba(52, 211, 153, 0.12);
+    --orange: #F59E0B;
+    --orange-glow: rgba(245, 158, 11, 0.12);
+    --purple: #A78BFA;
+    --purple-glow: rgba(167, 139, 250, 0.12);
+    --btc: #F7931A;
+    --btc-glow: rgba(247, 147, 26, 0.10);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --radius-xs: 6px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(59,130,246,0.06), transparent),
+      radial-gradient(ellipse 50% 50% at 80% 80%, rgba(167,139,250,0.04), transparent);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; }
+
+  /* ─── Header ─── */
+  .header {
+    text-align: center;
+    padding: 64px 24px 48px;
+  }
+  .header .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-glow);
+    border: 1px solid rgba(59,130,246,0.2);
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+  }
+  .header h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  .header h1 span { color: var(--accent); }
+  .header p {
+    color: var(--text-dim);
+    font-size: 17px;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* ─── Billing Toggle ─── */
+  .billing-toggle-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 48px;
+  }
+  .billing-toggle {
+    display: flex;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 4px;
+    position: relative;
+  }
+  .billing-toggle button {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 24px;
+    border: none;
+    background: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-radius: 100px;
+    transition: color 0.2s;
+    position: relative;
+    z-index: 1;
+  }
+  .billing-toggle button.active {
+    color: var(--text);
+    background: var(--accent);
+  }
+  .billing-toggle .save-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--green);
+    background: var(--green-glow);
+    padding: 2px 8px;
+    border-radius: 100px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* ─── Grid ─── */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px 32px;
+    align-items: start;
+  }
+
+  @media (max-width: 1100px) {
+    .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .pricing-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ─── Card ─── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+  }
+  .card:hover {
+    border-color: var(--border-accent);
+    transform: translateY(-2px);
+  }
+  .card.popular {
+    border-color: var(--accent);
+    box-shadow: 0 0 40px var(--accent-glow), 0 0 0 1px rgba(59,130,246,0.15);
+  }
+  .card.popular:hover { transform: translateY(-4px); }
+
+  .card.enterprise {
+    border-color: var(--purple);
+    box-shadow: 0 0 40px var(--purple-glow);
+  }
+
+  .popular-tag {
+    position: absolute;
+    top: -1px; left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--accent);
+    padding: 4px 16px;
+    border-radius: 100px;
+  }
+
+  .card-icon {
+    width: 44px; height: 44px;
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+  }
+  .card-icon.basic { background: var(--green-glow); }
+  .card-icon.pro { background: var(--accent-glow); }
+  .card-icon.premium { background: var(--orange-glow); }
+  .card-icon.ent { background: var(--purple-glow); }
+
+  .card-name {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+  }
+  .card-name.basic-c { color: var(--green); }
+  .card-name.pro-c { color: var(--accent); }
+  .card-name.premium-c { color: var(--orange); }
+  .card-name.ent-c { color: var(--purple); }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-bottom: 20px;
+    min-height: 40px;
+  }
+
+  /* ─── Price ─── */
+  .price-block { margin-bottom: 24px; }
+  .price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+  .price-amount {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .price-unit {
+    font-size: 14px;
+    color: var(--text-dim);
+    font-weight: 400;
+  }
+  .price-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .price-free {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  /* ─── User Picker ─── */
+  .user-picker {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 20px;
+  }
+  .user-picker-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .user-picker-label .count {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .user-picker-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .user-picker-controls button {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .user-picker-controls button:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-accent);
+  }
+  .user-picker-controls button:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
+  .user-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--border);
+    outline: none;
+    cursor: pointer;
+  }
+  .user-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 8px rgba(59,130,246,0.4);
+    cursor: pointer;
+  }
+  .user-slider::-moz-range-thumb {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 8px rgba(59,130,246,0.4);
+    cursor: pointer;
+  }
+
+  /* ─── Total ─── */
+  .total-bar {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    min-height: 44px;
+  }
+  .total-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .total-amount {
+    font-family: 'Space Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .total-amount .dim { color: var(--text-muted); font-weight: 400; font-size: 12px; }
+
+  /* ─── Discount badge ─── */
+  .vol-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--green);
+    background: var(--green-glow);
+    border: 1px solid rgba(52,211,153,0.15);
+    padding: 2px 8px;
+    border-radius: 100px;
+    display: none;
+    margin-left: auto;
+  }
+  .vol-badge.show { display: inline-block; }
+
+  /* ─── CTA ─── */
+  .cta {
+    width: 100%;
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    margin-bottom: 24px;
+  }
+  .cta-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .cta-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 20px var(--accent-glow); }
+  .cta-outline {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .cta-outline:hover { border-color: var(--text-dim); background: var(--surface-hover); }
+  .cta-purple {
+    background: var(--purple);
+    color: #fff;
+  }
+  .cta-purple:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+  /* ─── Feature List ─── */
+  .features-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+  .features { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.45;
+  }
+  .features li .check {
+    flex-shrink: 0;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    margin-top: 1px;
+  }
+  .check.green { background: var(--green-glow); color: var(--green); }
+  .check.blue { background: var(--accent-glow); color: var(--accent); }
+  .check.orange { background: var(--orange-glow); color: var(--orange); }
+  .check.purple { background: var(--purple-glow); color: var(--purple); }
+
+  .features li .new-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    background: var(--btc-glow);
+    color: var(--btc);
+    border: 1px solid rgba(247,147,26,0.15);
+    padding: 1px 6px;
+    border-radius: 100px;
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0;
+  }
+
+  .includes-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 14px;
+  }
+
+  /* ─── Add-ons Section ─── */
+  .addons-section {
+    max-width: 1280px;
+    margin: 32px auto 0;
+    padding: 0 24px 64px;
+  }
+  .addons-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+  .addons-subtitle {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+  }
+  .addons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .addon-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    transition: border-color 0.2s;
+  }
+  .addon-card:hover { border-color: var(--border-accent); }
+  .addon-icon {
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.04);
+  }
+  .addon-info { flex: 1; }
+  .addon-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .addon-desc { font-size: 12px; color: var(--text-dim); line-height: 1.4; margin-bottom: 8px; }
+  .addon-price {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+  }
+  .addon-price .dim { color: var(--text-muted); font-size: 11px; }
+  .addon-tag {
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+    padding: 2px 8px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+  .addon-tag.pro { background: var(--accent-glow); color: var(--accent); }
+  .addon-tag.prem { background: var(--orange-glow); color: var(--orange); }
+
+  /* ─── Footer Note ─── */
+  .footer-note {
+    text-align: center;
+    padding: 0 24px 64px;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .footer-note a { color: var(--accent); text-decoration: none; }
+  .footer-note a:hover { text-decoration: underline; }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card { animation: fadeUp 0.5s ease both; }
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.12s; }
+  .card:nth-child(3) { animation-delay: 0.19s; }
+  .card:nth-child(4) { animation-delay: 0.26s; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">⚡ Simple pricing, powerful features</div>
+    <h1>Pick your plan.<br><span>Scale your team.</span></h1>
+    <p>Four tiers — pick what fits, add users as you grow. No hidden fees. Cancel anytime.</p>
+  </div>
+
+  <!-- Billing Toggle -->
+  <div class="billing-toggle-wrap">
+    <div class="billing-toggle">
+      <button id="btn-monthly" onclick="setBilling('monthly')">Monthly</button>
+      <button id="btn-annual" class="active" onclick="setBilling('annual')">Annual <span class="save-tag">SAVE 20-29%</span></button>
+    </div>
+  </div>
+
+  <!-- Pricing Cards -->
+  <div class="pricing-grid">
+
+    <!-- ── BASIC ── -->
+    <div class="card" id="card-basic">
+      <div class="card-icon basic">🟢</div>
+      <div class="card-name basic-c">Basic</div>
+      <div class="card-desc">For small teams testing the waters. Core tracking essentials.</div>
+
+      <div class="price-block">
+        <div class="price-row">
+          <span class="price-amount" data-monthly="7" data-annual="5">$5</span>
+          <span class="price-unit">/user/mo</span>
+        </div>
+        <div class="price-sub billing-note">billed annually</div>
+      </div>
+
+      <div class="user-picker">
+        <div class="user-picker-label">
+          <span>Team size</span>
+          <span class="count" id="basic-count">5 users</span>
+        </div>
+        <div class="user-picker-controls">
+          <button onclick="changeUsers('basic', -1)">−</button>
+          <input type="range" class="user-slider" id="basic-slider" min="1" max="10" value="5" oninput="updateCard('basic')">
+          <button onclick="changeUsers('basic', 1)">+</button>
+        </div>
+      </div>
+
+      <div class="total-bar">
+        <span class="total-label">Monthly total</span>
+        <span class="total-amount" id="basic-total">$25<span class="dim">/mo</span></span>
+      </div>
+
+      <button class="cta cta-outline">Start 14-day free trial</button>
+
+      <div class="features-label">What's included</div>
+      <ul class="features">
+        <li><span class="check green">✓</span>Up to 10 users</li>
+        <li><span class="check green">✓</span>Automatic & manual time tracking</li>
+        <li><span class="check green">✓</span>Screenshots — 5 min intervals</li>
+        <li><span class="check green">✓</span>App & website usage tracking</li>
+        <li><span class="check green">✓</span>Basic productivity scoring</li>
+        <li><span class="check green">✓</span>Idle time detection</li>
+        <li><span class="check green">✓</span>Team dashboard</li>
+        <li><span class="check green">✓</span>Up to 3 projects</li>
+        <li><span class="check green">✓</span>Email support</li>
+        <li><span class="check green">✓</span>3-month data retention</li>
+      </ul>
+    </div>
+
+    <!-- ── PRO ── -->
+    <div class="card popular" id="card-pro">
+      <div class="popular-tag">MOST POPULAR</div>
+      <div class="card-icon pro">🔵</div>
+      <div class="card-name pro-c">Pro</div>
+      <div class="card-desc">For growing teams that need full visibility and control.</div>
+
+      <div class="price-block">
+        <div class="price-row">
+          <span class="price-amount" data-monthly="13" data-annual="10">$10</span>
+          <span class="price-unit">/user/mo</span>
+        </div>
+        <div class="price-sub billing-note">billed annually</div>
+      </div>
+
+      <div class="user-picker">
+        <div class="user-picker-label">
+          <span>Team size</span>
+          <span class="count" id="pro-count">25 users</span>
+        </div>
+        <div class="user-picker-controls">
+          <button onclick="changeUsers('pro', -1)">−</button>
+          <input type="range" class="user-slider" id="pro-slider" min="1" max="200" value="25" oninput="updateCard('pro')">
+          <button onclick="changeUsers('pro', 1)">+</button>
+        </div>
+      </div>
+
+      <div class="total-bar">
+        <div>
+          <span class="total-label">Monthly total</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="vol-badge" id="pro-vol"></span>
+          <span class="total-amount" id="pro-total">$250<span class="dim">/mo</span></span>
+        </div>
+      </div>
+
+      <button class="cta cta-primary">Start 14-day free trial</button>
+
+      <div class="includes-note">Everything in Basic, plus:</div>
+      <ul class="features">
+        <li><span class="check blue">✓</span>Unlimited users & projects</li>
+        <li><span class="check blue">✓</span>Unlimited screenshots — configurable intervals</li>
+        <li><span class="check blue">✓</span>Screenshot blur & deletion controls</li>
+        <li><span class="check blue">✓</span>Team-wide time approval workflow</li>
+        <li><span class="check blue">✓</span>Full reporting suite + CSV export</li>
+        <li><span class="check blue">✓</span>Client management & access portal</li>
+        <li><span class="check blue">✓</span>App & web productivity ratings</li>
+        <li><span class="check blue">✓</span>Google Calendar sync</li>
+        <li><span class="check blue">✓</span>Weekly summary reports</li>
+        <li><span class="check blue">✓</span>6-month data retention</li>
+      </ul>
+    </div>
+
+    <!-- ── PREMIUM ── -->
+    <div class="card" id="card-premium">
+      <div class="card-icon premium">🟠</div>
+      <div class="card-name premium-c">Premium</div>
+      <div class="card-desc">For HR-driven orgs needing scheduling, compliance & AI.</div>
+
+      <div class="price-block">
+        <div class="price-row">
+          <span class="price-amount" data-monthly="25" data-annual="20">$20</span>
+          <span class="price-unit">/user/mo</span>
+        </div>
+        <div class="price-sub billing-note">billed annually</div>
+      </div>
+
+      <div class="user-picker">
+        <div class="user-picker-label">
+          <span>Team size</span>
+          <span class="count" id="premium-count">50 users</span>
+        </div>
+        <div class="user-picker-controls">
+          <button onclick="changeUsers('premium', -1)">−</button>
+          <input type="range" class="user-slider" id="premium-slider" min="1" max="200" value="50" oninput="updateCard('premium')">
+          <button onclick="changeUsers('premium', 1)">+</button>
+        </div>
+      </div>
+
+      <div class="total-bar">
+        <div>
+          <span class="total-label">Monthly total</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="vol-badge" id="premium-vol"></span>
+          <span class="total-amount" id="premium-total">$1,000<span class="dim">/mo</span></span>
+        </div>
+      </div>
+
+      <button class="cta cta-outline">Start 14-day free trial</button>
+
+      <div class="includes-note">Everything in Pro, plus:</div>
+      <ul class="features">
+        <li><span class="check orange">✓</span>Shift scheduling & templates</li>
+        <li><span class="check orange">✓</span>Overtime requests & approval</li>
+        <li><span class="check orange">✓</span>Attendance & delay tracking</li>
+        <li><span class="check orange">✓</span>AI weekly performance summaries <span class="new-tag">AI</span></li>
+        <li><span class="check orange">✓</span>Slack, Jira & Linear integrations</li>
+        <li><span class="check orange">✓</span>Custom productivity categories</li>
+        <li><span class="check orange">✓</span>Advanced notification rules</li>
+        <li><span class="check orange">✓</span>3 company workspaces</li>
+        <li><span class="check orange">✓</span>Priority email support (24h)</li>
+        <li><span class="check orange">✓</span>24-month data retention</li>
+      </ul>
+    </div>
+
+    <!-- ── ENTERPRISE ── -->
+    <div class="card enterprise" id="card-enterprise">
+      <div class="card-icon ent">🟣</div>
+      <div class="card-name ent-c">Enterprise</div>
+      <div class="card-desc">For large orgs, crypto-native DAOs & regulated industries.</div>
+
+      <div class="price-block">
+        <div class="price-row">
+          <span class="price-amount">Custom</span>
+        </div>
+        <div class="price-sub">Volume discounts for 200+ users</div>
+      </div>
+
+      <div class="user-picker" style="background:var(--purple-glow);border-color:rgba(167,139,250,0.15);">
+        <div class="user-picker-label">
+          <span>Estimated team size</span>
+          <span class="count" id="ent-count">200 users</span>
+        </div>
+        <div class="user-picker-controls">
+          <button onclick="changeUsers('ent', -10)">−</button>
+          <input type="range" class="user-slider" id="ent-slider" min="50" max="1000" value="200" step="10" oninput="updateCard('ent')">
+          <button onclick="changeUsers('ent', 10)">+</button>
+        </div>
+      </div>
+
+      <div class="total-bar" style="border-color:rgba(167,139,250,0.15);">
+        <span class="total-label">Estimated from</span>
+        <span class="total-amount" id="ent-total">~$5,000<span class="dim">/mo</span></span>
+      </div>
+
+      <button class="cta cta-purple">Talk to Sales</button>
+
+      <div class="includes-note">Everything in Premium, plus:</div>
+      <ul class="features">
+        <li><span class="check purple">✓</span>Web3 / Crypto payroll via BTCPayServer <span class="new-tag">₿ CRYPTO</span></li>
+        <li><span class="check purple">✓</span>Full audit logs — tamper-evident</li>
+        <li><span class="check purple">✓</span>SSO / SAML (Okta, Azure AD, Google)</li>
+        <li><span class="check purple">✓</span>Discord integration & bot commands</li>
+        <li><span class="check purple">✓</span>Custom report builder + white-label PDF</li>
+        <li><span class="check purple">✓</span>GitHub commit-to-project auto-logging</li>
+        <li><span class="check purple">✓</span>REST API access (read/write)</li>
+        <li><span class="check purple">✓</span>Custom data residency (EU/US)</li>
+        <li><span class="check purple">✓</span>Dedicated Slack channel — 2h response</li>
+        <li><span class="check purple">✓</span>Unlimited data retention & workspaces</li>
+        <li><span class="check purple">✓</span>99.9% uptime SLA</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Add-ons -->
+  <div class="addons-section">
+    <div class="addons-title">Optional add-ons</div>
+    <div class="addons-subtitle">Extend any paid plan with these modules. Priced per user/month.</div>
+    <div class="addons-grid">
+
+      <!-- AI Productivity Insights -->
+      <div class="addon-card">
+        <div class="addon-icon">🧠</div>
+        <div class="addon-info">
+          <div class="addon-name">AI Productivity Insights <span class="new-tag" style="font-family:'Space Mono',monospace;font-size:9px;background:var(--btc-glow);color:var(--btc);border:1px solid rgba(247,147,26,0.15);padding:1px 6px;border-radius:100px;margin-left:4px;">AI</span></div>
+          <div class="addon-desc">Smart summaries, burnout risk detection, work pattern analysis & automated coaching recommendations.</div>
+          <div class="addon-price">$3 <span class="dim">/user/mo</span></div>
+        </div>
+        <span class="addon-tag pro">Pro & Premium</span>
+      </div>
+
+      <!-- Advanced Integrations Pack -->
+      <div class="addon-card">
+        <div class="addon-icon">🔗</div>
+        <div class="addon-info">
+          <div class="addon-name">Advanced Integrations Pack</div>
+          <div class="addon-desc">Connect to 50+ tools — Jira, Asana, Trello, Monday, QuickBooks, Xero, Zapier & webhooks.</div>
+          <div class="addon-price">$2 <span class="dim">/user/mo</span></div>
+        </div>
+        <span class="addon-tag pro">All paid</span>
+      </div>
+
+      <!-- Extended Data History -->
+      <div class="addon-card">
+        <div class="addon-icon">🗄️</div>
+        <div class="addon-info">
+          <div class="addon-name">Extended Data History</div>
+          <div class="addon-desc">3-year data retention for compliance and long-term analytics.</div>
+          <div class="addon-price">$1 <span class="dim">/user/mo</span></div>
+        </div>
+        <span class="addon-tag pro">All paid</span>
+      </div>
+
+      <!-- Priority Phone Support -->
+      <div class="addon-card">
+        <div class="addon-icon">📞</div>
+        <div class="addon-info">
+          <div class="addon-name">Priority Phone Support</div>
+          <div class="addon-desc">Direct phone line to StaffCo support team during business hours.</div>
+          <div class="addon-price">$5 <span class="dim">/user/mo</span></div>
+        </div>
+        <span class="addon-tag pro">Basic & Pro</span>
+      </div>
+
+      <!-- Multi-Language Support -->
+      <div class="addon-card">
+        <div class="addon-icon">🌐</div>
+        <div class="addon-info">
+          <div class="addon-name">Multi-Language Support</div>
+          <div class="addon-desc">Interface and reports in 15+ languages for international teams.</div>
+          <div class="addon-price">$1 <span class="dim">/user/mo</span></div>
+        </div>
+        <span class="addon-tag pro">All paid</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-note">
+    All plans include a <strong>14-day free trial</strong>. No credit card required.<br>
+    Need a custom setup? <a href="#">Contact our sales team →</a>
+  </div>
+
+</div>
+
+<script>
+  let billing = 'annual';
+
+  const plans = {
+    basic: { monthly: 7, annual: 5, min: 1, max: 10, step: 1 },
+    pro: { monthly: 13, annual: 10, min: 1, max: 200, step: 1 },
+    premium: { monthly: 25, annual: 20, min: 1, max: 200, step: 1 },
+    ent: { monthly: 30, annual: 25, min: 50, max: 1000, step: 10 }
+  };
+
+  // Volume discount tiers (annual only)
+  function getDiscount(users) {
+    if (users >= 200) return { pct: 20, label: '20% VOL' };
+    if (users >= 100) return { pct: 15, label: '15% VOL' };
+    if (users >= 50) return { pct: 10, label: '10% VOL' };
+    return { pct: 0, label: '' };
+  }
+
+  function setBilling(mode) {
+    billing = mode;
+    document.getElementById('btn-monthly').classList.toggle('active', mode === 'monthly');
+    document.getElementById('btn-annual').classList.toggle('active', mode === 'annual');
+
+    // Update all price displays
+    document.querySelectorAll('.price-amount[data-monthly]').forEach(el => {
+      const price = mode === 'monthly' ? el.dataset.monthly : el.dataset.annual;
+      el.textContent = '$' + price;
+    });
+
+    document.querySelectorAll('.billing-note').forEach(el => {
+      el.textContent = mode === 'monthly' ? 'billed monthly' : 'billed annually';
+    });
+
+    ['basic', 'pro', 'premium', 'ent'].forEach(updateCard);
+  }
+
+  function changeUsers(plan, delta) {
+    const slider = document.getElementById(plan + '-slider');
+    const step = plans[plan].step;
+    let val = parseInt(slider.value) + (delta * step);
+    val = Math.max(plans[plan].min, Math.min(plans[plan].max, val));
+    slider.value = val;
+    updateCard(plan);
+  }
+
+  function updateCard(plan) {
+    const slider = document.getElementById(plan + '-slider');
+    const users = parseInt(slider.value);
+    const countEl = document.getElementById(plan + '-count');
+    const totalEl = document.getElementById(plan + '-total');
+
+    countEl.textContent = users + (users === 1 ? ' user' : ' users');
+
+    const base = billing === 'monthly' ? plans[plan].monthly : plans[plan].annual;
+
+    if (plan === 'ent') {
+      // Enterprise estimate
+      const disc = getDiscount(users);
+      const effective = base * (1 - disc.pct / 100);
+      const total = Math.round(effective * users);
+      totalEl.innerHTML = '~$' + total.toLocaleString() + '<span class="dim">/mo</span>';
+      return;
+    }
+
+    // Volume discounts for pro/premium on annual
+    const disc = (billing === 'annual') ? getDiscount(users) : { pct: 0, label: '' };
+    const effective = base * (1 - disc.pct / 100);
+    const total = Math.round(effective * users * 100) / 100;
+
+    totalEl.innerHTML = '$' + total.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}) + '<span class="dim">/mo</span>';
+
+    // Volume badge
+    const volEl = document.getElementById(plan + '-vol');
+    if (volEl) {
+      if (disc.pct > 0) {
+        volEl.textContent = disc.label;
+        volEl.classList.add('show');
+      } else {
+        volEl.classList.remove('show');
+      }
+    }
+  }
+
+  // Init
+  ['basic', 'pro', 'premium', 'ent'].forEach(updateCard);
+</script>
+</body>
+</html>
